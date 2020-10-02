@@ -1,3 +1,8 @@
+/**
+	Copyright 2020 Dark Dead Dragon (ak LeonardoDarkVinchi)
+	License by GNU GPLv3
+*/
+
 package DEstraction;
 import DEstraction.Animation;
 
@@ -241,6 +246,10 @@ public class Settlers{
 		}
 	}
 	
+	public void unChooseOne(int settlerNumber) {
+		settler[settlerNumber].isSelected = false;
+	}
+	
 	public int isSettlerChoosen(int x, int y){
 		int choosenSettler = -13;
 		for (int i = 0; i < settler.length; i++) 
@@ -362,6 +371,7 @@ public class Settlers{
 				//previousDestination.pop();
 				previousTask = null;
 			}
+			if (nexTasks.peek() != null) nexTasks.clear();
 			if (isRes) {
 				destinationState = 3;
 			}

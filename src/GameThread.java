@@ -1,3 +1,8 @@
+/**
+	Copyright 2020 Dark Dead Dragon (ak LeonardoDarkVinchi)
+	License by GNU GPLv3
+*/
+
 package DEstraction;
 import DEstraction.*;
 
@@ -82,13 +87,14 @@ public class GameThread extends Thread{
 										+ "<br>" + formatter.format(gameEndTime - gameStartTime)
 										+"</html>"
 										, "ѕоздравл€ю!!!", JOptionPane.INFORMATION_MESSAGE);
+		gameStopped = (byte)(gameStopped | 4);
 		new Thread(()->{
 				mainFrame.gameButton.doClick();
 			}, "GameOver").start();	
 	}
 	
 	public void stopGame() {
-		gameStopped = 4; 
+		gameStopped = (byte)(gameStopped | 4); 
 		// бинарные операции имеют меньший приоритет чем операции сравнени€. 
 		for (;(gameStopped & 3) != 3;) //пока оба потока не останов€тс€.
 			try {
@@ -191,7 +197,7 @@ public class GameThread extends Thread{
 			}
 			
 			if (isMiddlePressed) {
-				System.out.println("Is middle " + isMiddlePressed);
+				//System.out.println("Is middle " + isMiddlePressed);
 				drawPanel.setOffset(e);
 			}
 		}
@@ -206,50 +212,133 @@ public class GameThread extends Thread{
 			int mapX = e.getX() - drawPanel.offsetX;
 			int mapY = e.getY() - drawPanel.offsetY;
 			
+			isMiddlePressed = false;
 			//JOptionPane.showMessageDialog(null,"Message " + e.getButton()/*+ e.getX() + " " + e.getY()*//*+ e.getSource()*/, "mouseClicked", JOptionPane.INFORMATION_MESSAGE);
 			if (infoWindow.isVisible()) infoWindow.dispose();
 			else {
 				if (e.getButton() == 1){
-					if (choosenSettler >= 0) {
-						choosenSettler = -13;
-						gameSupportPanel.settlerUnchoosen();
-						settlers.unChooseAll();
-					}
-					if (choosenSettlers != null) {
-						settlers.unChooseAll();
-						choosenSettlers = null;
-					}
 					if (startPoint != null) {
-						endPoint = new Point(e.getX(), e.getY());
-						if (Math.abs(startPoint.x - endPoint.x) > 2 && Math.abs(startPoint.y - endPoint.y) > 2) {
-							choosenSettlers = settlers.getSettlers(startPoint, endPoint);
-							if (choosenSettlers != null)
-								if (choosenSettlers.length == 1) {
-									choosenSettler = choosenSettlers[0];
-									choosenSettlers = null;
+						startPoint = new Point(startPoint.x - drawPanel.offsetX, startPoint.y - drawPanel.offsetY);
+						endPoint = new Point(mapX, mapY);
+						if (!e.isShiftDown()) {
+							gameSupportPanel.settlerUnchoosen();
+							if (choosenSettler >= 0) {
+								settlers.unChooseOne(choosenSettler);
+								choosenSettler = -13;
+							}
+							if (choosenSettlers != null) {
+								settlers.unChooseAll();
+								choosenSettlers = null;
+							}
+							if (Math.abs(startPoint.x - endPoint.x) > 2 && Math.abs(startPoint.y - endPoint.y) > 2) {
+								choosenSettlers = settlers.getSettlers(startPoint, endPoint);
+								if (choosenSettlers != null)
+									if (choosenSettlers.length == 1) {
+										choosenSettler = choosenSettlers[0];
+										choosenSettlers = null;
+									}
+							} else {
+								int localChoosenSettler = settlers.isSettlerChoosen(mapX, mapY);
+								if (localChoosenSettler < 0) {
+									String cellInfo [] = mainMap.getCellInfo(mapX, mapY);
+									infoWindow.setResourceInfo(cellInfo[0], cellInfo[1]);
+									infoWindow.setLocation(currentMousePoint.x, currentMousePoint.y);
+								} else {
+									choosenSettler = localChoosenSettler;
+									String settlerInfo [] = settlers.getSettlerInfo(localChoosenSettler);
+									infoWindow.setUnitInfo(settlerInfo[0], settlerInfo[1], settlerInfo[2], settlerInfo[3], settlerInfo[4]);
+									infoWindow.setLocation(currentMousePoint.x, currentMousePoint.y);
 								}
-						} else {
-							int localChoosenSettler = settlers.isSettlerChoosen(mapX, mapY);
-							if (localChoosenSettler < 0) {
-								String cellInfo [] = mainMap.getCellInfo(mapX, mapY);
-								infoWindow.setResourceInfo(cellInfo[0], cellInfo[1]);
-								infoWindow.setLocation(currentMousePoint.x, currentMousePoint.y);
 							}
-							else {
-								choosenSettler = localChoosenSettler;
-								String settlerInfo [] = settlers.getSettlerInfo(localChoosenSettler);
-								infoWindow.setUnitInfo(settlerInfo[0], settlerInfo[1], settlerInfo[2], settlerInfo[3], settlerInfo[4]);
-								infoWindow.setLocation(currentMousePoint.x, currentMousePoint.y);
+						} else { //isShiftDown
+							if (Math.abs(startPoint.x - endPoint.x) > 2 && Math.abs(startPoint.y - endPoint.y) > 2) {
+								int [] newSettlersChoosen = settlers.getSettlers(startPoint, endPoint);
+								//если в выделение хоть кто-то попал, то 
+								if (newSettlersChoosen != null) {								
+									if (choosenSettlers != null) {
+										//—равниваем массивы
+										for (int i = 0; i < newSettlersChoosen.length; i++)
+											for (int j = 0; j < choosenSettlers.length; j++)
+												if (newSettlersChoosen[i] == choosenSettlers[j]) {
+													for(int k = i; k < newSettlersChoosen.length - 1; k++)
+														newSettlersChoosen[k] = newSettlersChoosen[k+1];
+													newSettlersChoosen = Arrays.copyOf(newSettlersChoosen, newSettlersChoosen.length - 1);
+													i--;
+													break;
+												}
+										choosenSettlers = Arrays.copyOf(choosenSettlers, choosenSettlers.length + newSettlersChoosen.length);
+										System.arraycopy(newSettlersChoosen, 0, choosenSettlers, choosenSettlers.length - newSettlersChoosen.length, newSettlersChoosen.length);
+									} else { //≈сли никого раньше не было выбрано, выбираем тех что есть.
+										if (choosenSettler < 0)
+											choosenSettlers = newSettlersChoosen;
+										else { //≈сли же был всего один, тогда запихиваем его в конец. ѕор€док номеров не важен.
+											for (int i = 0; i < newSettlersChoosen.length; i++)
+												if (newSettlersChoosen[i] == choosenSettler) {
+													for(int k = i; k < newSettlersChoosen.length - 1; k++)
+														newSettlersChoosen[k] = newSettlersChoosen[k+1];
+													newSettlersChoosen = Arrays.copyOf(newSettlersChoosen, newSettlersChoosen.length - 1);
+												}
+											gameSupportPanel.settlerUnchoosen();
+											choosenSettlers = Arrays.copyOf(newSettlersChoosen, newSettlersChoosen.length + 1);
+											choosenSettlers[choosenSettlers.length - 1] = choosenSettler;
+											choosenSettler = -13;
+										}
+									}
+									//» в конце провер€ем, что если в рамке всего один додик, то выбираем его как одного.
+									if (choosenSettlers.length == 1) {
+											choosenSettler = choosenSettlers[0];
+											choosenSettlers = null;
+										}
+								} //если никто не попал вообще насрать.
+							} else { 
+								int localChoosenSettler = settlers.isSettlerChoosen(mapX, mapY);
+								//≈сли же кликом попали по юниту
+								if (localChoosenSettler >= 0) {
+									//≈сли был один, то либо добавл€ем нового, либо если клик был по уже выбранному, отмен€ем выделение
+									if (choosenSettler >= 0 && choosenSettlers == null) {
+										gameSupportPanel.settlerUnchoosen();
+										if (localChoosenSettler != choosenSettler) {
+											choosenSettlers = new int[] {choosenSettler, localChoosenSettler};
+										} else {
+											settlers.unChooseOne(choosenSettler);
+										}
+										choosenSettler = -13;
+									//≈сли был не один, то просто добавлем к массиву	
+									} else if (choosenSettler < 0 && choosenSettlers != null) {
+										//провер€ем, был ли он уже в списке
+										int i = 0;
+										for (; i < choosenSettlers.length; i++)
+												//≈сли встретилс€, то удал€ем.
+												if (choosenSettlers[i] == localChoosenSettler) {
+													settlers.unChooseOne(localChoosenSettler);
+													for(int k = i; k < choosenSettlers.length - 1; k++)
+														choosenSettlers[k] = choosenSettlers[k+1];
+													choosenSettlers = Arrays.copyOf(choosenSettlers, choosenSettlers.length - 1);
+													i--;
+													break; //дальше искать смысла нет.
+												}
+										//≈сли цикл прерван, то i не достигент длины массива, значит был встречен повтор.
+										if (i < choosenSettlers.length) {
+											if (choosenSettlers.length == 1) {
+												choosenSettler = choosenSettlers[0];
+												choosenSettlers = null;
+											}
+										} else { 
+											choosenSettlers = Arrays.copyOf(choosenSettlers, choosenSettlers.length + 1);
+											choosenSettlers[choosenSettlers.length - 1] = localChoosenSettler;
+										}
+									//≈сли вообще никого не было, записываем его как одного выбранного.
+									} else if (choosenSettler < 0 && choosenSettlers == null) {
+										choosenSettler = localChoosenSettler;
+									} else System.out.println("Error! We have array of choosens and a choosen one!");
+								} 
 							}
-						}
+						} //else isShiftDown
 					}
 					startPoint = null;
-					endPoint = null;
-					drawPanel.setRectCoords(startPoint, endPoint);
+					drawPanel.setRectCoords(null, null);
 				}
-				if (e.getButton() == 2) isMiddlePressed = false;
 				if (e.getButton() == 3){
-					//todo checkdestination on map
 					if (choosenSettler >= 0) 
 						if (e.isShiftDown()) {
 							//System.out.println("next task setted");
