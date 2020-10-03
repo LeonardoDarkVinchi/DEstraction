@@ -64,8 +64,8 @@ public class HelpFrame extends JFrame {
 		mainPanel.add(closeButton, con);
 			
 		if (gbl.rowHeights == null) gbl.rowHeights = new int[2];
-		gbl.rowHeights[0] = (int)(getHeight() * 11 / 12);
-		gbl.rowHeights[1] = (int)(getHeight() * 1 / 12);
+		gbl.rowHeights[0] = getHeight() - 50;//(int)(getHeight() * 11 / 12);
+		gbl.rowHeights[1] = 50;//(int)(getHeight() * 1 / 12);
 		
 		add(mainPanel);
 	}

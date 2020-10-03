@@ -13,21 +13,23 @@ import java.awt.event.*;
 
 
 public class MainFrame extends JFrame {
-	private int menuModeWidth = 100;
-	private int menuModeHeight = 160;
-	private int gameModeWidth = 740;
-	private int gameModeHeight = 640;
+	public int menuModeWidth = 100;
+	public int menuModeHeight = 160;
+	public int gameModeWidth = 740;
+	public int gameModeHeight = 640;
 	private GameThread game;
 	private MainFrame thisFrame;
 	JButton gameButton;
 	JButton optionsButton;
 	JButton closeButton;
 	JButton helpButton;
+	GridBagLayout gameGridLayout;
 	GridBagConstraints constraintsForGamePanel; 
 	GridBagConstraints constraintsForMenuPanel; 
 	GridBagConstraints constraintsForGSPanel; 
 	FrameMove menuPanel;
 	private HelpFrame helpWindow;
+	public OptionsFrame optionsWindow;
 	
 	public MainFrame() {
 		super("DEstraction");
@@ -46,6 +48,7 @@ public class MainFrame extends JFrame {
 		menuPanel = new FrameMove(this);
 		
 		helpWindow = new HelpFrame();
+		optionsWindow = new OptionsFrame(this);
 		thisFrame = this;
 		
 		menuPanel.setLayout(new java.awt.GridLayout(0, 1, 0, 0));
@@ -119,7 +122,8 @@ public class MainFrame extends JFrame {
 		
 		optionsButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(ActionEvent paramAnonymousActionEvent) {
-				JOptionPane.showMessageDialog(null,"<html>Тут у нас куча опций.<br>Может быть будут когда-нибудь.</html>", "Это была кнопка остановки игры.", JOptionPane.INFORMATION_MESSAGE);
+				optionsWindow.setVisible(true);
+				//JOptionPane.showMessageDialog(null,"<html>Тут у нас куча опций.<br>Может быть будут когда-нибудь.</html>", "Это была кнопка остановки игры.", JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
 		
@@ -151,6 +155,16 @@ public class MainFrame extends JFrame {
 		});
 	}
 	
+	public void paramsChanged() {
+		if (game != null) {
+			setSize(gameModeWidth, gameModeHeight);
+			setGridBagLayout();
+			game.drawPanel.checkOffset();
+			game.gameSleepTime = (int)(100 / optionsWindow.gameSpeed);
+			game.drawSleepTime = (int)(1000/ optionsWindow.frameRate);
+		}
+	}
+	
 	public void changeWindow() {
 		dispose();
 		if (getWidth() == menuModeWidth) 
@@ -168,22 +182,26 @@ public class MainFrame extends JFrame {
 	
 	private void changeWindowToGameMode() {
 		getContentPane().remove(menuPanel);
-		GridBagLayout gbl = new GridBagLayout();
-		setLayout(gbl);
+		gameGridLayout = new GridBagLayout();
+		setLayout(gameGridLayout);
 		setSize(gameModeWidth, gameModeHeight);
 		add(menuPanel, constraintsForMenuPanel);
-				
-		gbl.columnWidths = new int[2];
-		gbl.columnWidths[0] = menuModeWidth;
-		gbl.columnWidths[1] = gameModeWidth - menuModeWidth;
+		
+		setGridBagLayout();
+	}
+	
+	private void setGridBagLayout() {
+		gameGridLayout.columnWidths = new int[2];
+		gameGridLayout.columnWidths[0] = menuModeWidth;
+		gameGridLayout.columnWidths[1] = gameModeWidth - menuModeWidth;
 		// for (int i = 1; i < gbl.columnWidths.length; i++) {
 			// gbl.columnWidths[i] = (gameModeWidth - menuModeWidth)/gbl.columnWidths.length; 
 		// };
 		
-		gbl.rowHeights = new int[3];
-		gbl.rowHeights[0] = menuModeHeight;
-		for (int i = 1; i < gbl.rowHeights.length; i++) {
-			gbl.rowHeights[i] = (gameModeHeight - menuModeHeight)/(gbl.rowHeights.length - 1); 
+		gameGridLayout.rowHeights = new int[3];
+		gameGridLayout.rowHeights[0] = menuModeHeight;
+		for (int i = 1; i < gameGridLayout.rowHeights.length; i++) {
+			gameGridLayout.rowHeights[i] = (gameModeHeight - menuModeHeight)/(gameGridLayout.rowHeights.length - 1); 
 		};
 	}
 }

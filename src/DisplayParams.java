@@ -31,6 +31,11 @@ public class DisplayParams{
 		return new Rectangle(minx, miny, maxx-minx, maxy-miny);
 	}
 
+	public static Rectangle getDefaultScreenBounds() {
+		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		return gd.getDefaultConfiguration().getBounds();
+	}
+
 	public static Point getCenterMainScreen(){
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (int) dimension.getWidth() / 2;

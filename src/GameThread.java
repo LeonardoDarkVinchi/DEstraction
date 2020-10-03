@@ -18,7 +18,7 @@ public class GameThread extends Thread{
 	
 	GameArena drawPanel;
 	GameSupportPanel gameSupportPanel;
-	MainFrame mainFrame;
+	MainFrame mainWindow;
 	Map mainMap;
 	InfoFrame infoWindow;
 	Settlers settlers;	
@@ -36,16 +36,19 @@ public class GameThread extends Thread{
 	
 	int choosenSettlers[];
 	
-	GameThread(MainFrame mainWindow) {		
+	GameThread(MainFrame mainFrame) {		
 		//game init
 		mainMap = new Map(this);
 		settlers = new Settlers(this);
-		mainFrame = mainWindow;
+		mainWindow = mainFrame;
 		infoWindow = new InfoFrame();
 		drawPanel = new GameArena(mainMap, settlers);
 		gameSupportPanel = new GameSupportPanel(mainMap, settlers);
 		settlers.transmitGameSupportPanel(gameSupportPanel);
 		settlers.transmitMap(mainMap);
+		
+		gameSleepTime = (int)(100 / mainFrame.optionsWindow.gameSpeed);
+		drawSleepTime = (int)(1000/ mainFrame.optionsWindow.frameRate);
 		
 		//Забавная история. Java не может добавить MouseInputListener сразу целиком. 
 		//Только таким раздельным способом. Так как переменные внутри класса CustomListener
@@ -74,7 +77,7 @@ public class GameThread extends Thread{
 			formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 			JOptionPane.showMessageDialog(null,"<html>ПОТРАЧЕНО...<br>впустую " + formatter.format(gameEndTime - gameStartTime) + "</html>", "GameOver", JOptionPane.INFORMATION_MESSAGE);
 			new Thread(()->{
-				mainFrame.gameButton.doClick();
+				mainWindow.gameButton.doClick();
 			}).start();	
 		}
 	}
@@ -89,7 +92,7 @@ public class GameThread extends Thread{
 										, "Поздравляю!!!", JOptionPane.INFORMATION_MESSAGE);
 		gameStopped = (byte)(gameStopped | 4);
 		new Thread(()->{
-				mainFrame.gameButton.doClick();
+				mainWindow.gameButton.doClick();
 			}, "GameOver").start();	
 	}
 	
@@ -99,8 +102,8 @@ public class GameThread extends Thread{
 		for (;(gameStopped & 3) != 3;) //пока оба потока не остановятся.
 			try {
 				Thread.sleep(100); } catch (Exception ex) {};
-		mainFrame.getContentPane().remove(drawPanel);
-		mainFrame.getContentPane().remove(gameSupportPanel);
+		mainWindow.getContentPane().remove(drawPanel);
+		mainWindow.getContentPane().remove(gameSupportPanel);
 		if (infoWindow.isVisible()) infoWindow.dispose();
 		//Решение проблемы с утечкой памяти.
 		//Если два класса ссылаются друг на друга, то для освобождения памяти, при окончании работы с этими классами
@@ -109,7 +112,7 @@ public class GameThread extends Thread{
 		drawPanel = null;
 		gameSupportPanel = null;
 		mainMap = null;
-		mainFrame = null;
+		mainWindow = null;
 		
 	}
 	
@@ -198,7 +201,7 @@ public class GameThread extends Thread{
 			
 			if (isMiddlePressed) {
 				//System.out.println("Is middle " + isMiddlePressed);
-				drawPanel.setOffset(e);
+				drawPanel.setOffset(new Point(e.getX(), e.getY()));
 			}
 		}
 		

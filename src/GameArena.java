@@ -39,15 +39,23 @@ public class GameArena extends JPanel{
 		position = p;
 	}
 	
-	public void setOffset(MouseEvent e) {
-		offsetX = e.getX() - position.x;
-		offsetY = e.getY() - position.y;
-		if (offsetX > 0) offsetX = 0;
-		if (offsetY > 0) offsetY = 0;
+	public void setOffset(Point e) {
+		offsetX = e.x - position.x;
+		offsetY = e.y - position.y;
+		
+		checkOffset();
+		//System.out.println(offsetX + " " + offsetY); //debug info
+	}
+	
+	public void checkOffset() {
+		//System.out.println("Checking offset: " + offsetX + " " + offsetY);
 		if (offsetX < getWidth() - mainMap.getMapWidth()) offsetX = getWidth() - mainMap.getMapWidth();
 		if (offsetY < getHeight() - mainMap.getMapHeight()) offsetY = getHeight() - mainMap.getMapHeight();
+		if (offsetX > 0) offsetX = 0;
+		if (offsetY > 0) offsetY = 0;
 		
-		//System.out.println(offsetX + " " + offsetY); //debug info
+		// System.out.println("getHeight() - mainMap.getMapHeight(): " + (getHeight() - mainMap.getMapHeight()));
+		// System.out.println("After check: " + offsetX + " " + offsetY);
 	}
 	
 	public void setRectCoords(Point startPoint, Point endPoint) {
@@ -67,6 +75,10 @@ public class GameArena extends JPanel{
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 			RenderingHints.VALUE_ANTIALIAS_ON);
 			
+		if (getWidth() > mainMap.getMapWidth() || getHeight() > mainMap.getMapHeight()) {
+			g2d.setColor(new Color(0,0,0));
+			g2d.fillRect(0, 0, getWidth(), getHeight());
+		}
 		Point offsetPoint = new Point(offsetX, offsetY);	
 		mainMap.paintMap(g2d, offsetPoint);
 		settlers.drawSettlers(g2d, offsetPoint);
