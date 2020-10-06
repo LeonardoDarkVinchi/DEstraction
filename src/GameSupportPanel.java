@@ -72,16 +72,16 @@ public class GameSupportPanel extends JPanel{
 	}
 	
 	public void settlerChoosen(int settlerNumber){
-		choosenSettler = settlerNumber;
-		String stlrInfo[] = settlers.getSettlerFullInfo(choosenSettler);
-		settlerInfo.setText("<html>Имя: " + stlrInfo[0]
-							+"<br>Возраст: "+ stlrInfo[1]
-							+"<br>Здоровье: "+ stlrInfo[2]
-							+"<br>Cытость: "+ stlrInfo[3]
-							+"<br>Бодрость: "+ stlrInfo[4]
-							+"<br>Статус: "+ stlrInfo[5]
-							+"</html>");
-		killSettler.setVisible(true);
+			choosenSettler = settlerNumber;
+			String stlrInfo[] = settlers.getSettlerFullInfo(choosenSettler);
+			settlerInfo.setText("<html>Имя: " + stlrInfo[0]
+								+"<br>Возраст: "+ stlrInfo[1]
+								+"<br>Здоровье: "+ stlrInfo[2]
+								+"<br>Cытость: "+ stlrInfo[3]
+								+"<br>Бодрость: "+ stlrInfo[4]
+								+"<br>Статус: "+ stlrInfo[5]
+								+"</html>");
+			killSettler.setVisible(true);
 	}
 	
 	public void settlersChoosen(int settlersNumber){
@@ -89,6 +89,7 @@ public class GameSupportPanel extends JPanel{
 	}
 	
 	public void settlerUnchoosen(){
+		choosenSettler = -13;
 		settlerInfo.setText("");
 		killSettler.setVisible(false);
 	}

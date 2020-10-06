@@ -26,10 +26,11 @@ public class OptionsFrame extends JFrame {
 	JLabel graphicOptions;
 	JSlider windowWidth;
 	JSlider windowHeight;
+	JCheckBox onTopCheckBox;
 	
 	JLabel audioOptions;
+	
 	JLabel gameplayOptions;
-	//JSpinner framePateSpinner;
 	JSlider frameRateSlider;
 	JSlider gameSpeedSlider;
 	
@@ -56,8 +57,6 @@ public class OptionsFrame extends JFrame {
 		
 		okButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(ActionEvent paramAnonymousActionEvent) {
-				mainWindow.gameModeWidth = windowWidth.getValue() + mainWindow.menuModeWidth;
-				mainWindow.gameModeHeight = windowHeight.getValue();
 				gameSpeed = (float)(gameSpeedSlider.getValue() / 2.0);
 				frameRate = (frameRateSlider.getValue() > 0)?frameRateSlider.getValue():1;
 				// try {
@@ -138,6 +137,8 @@ public class OptionsFrame extends JFrame {
 		windowHeight.setPaintTicks(true);
         windowHeight.setPaintLabels(true);
 		graphicPanel.add(windowHeight);
+		onTopCheckBox = new JCheckBox("Окно игры поверх других окон");
+		graphicPanel.add(onTopCheckBox);
 		tabbedPane.addTab("Графика", null, graphicPanel, "Графические настройки");
 		
 		FrameMove audioPanel = new FrameMove(this);

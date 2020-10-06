@@ -77,7 +77,9 @@ public class Settlers{
 	}
 	
 	public String[] getSettlerFullInfo(int i){
-		String answer [] = {
+		String answer [] = {"", "", "", "", "", ""};
+		if (i < settler.length)
+		answer = new String[] {
 			settler[i].name,
 			String.valueOf(settler[i].age),
 			String.valueOf(settler[i].hp),
@@ -103,7 +105,8 @@ public class Settlers{
 			(settler[i].resourceType == 2)?"Stone":
 			(settler[i].resourceType == 3)?"Fish":
 						"Nothing"),
-			String.valueOf(settler[i].workingSkills[settler[i].resourceType])
+			String.valueOf(settler[i].workingSkills[settler[i].resourceType]),
+			String.valueOf(settler[i].autoWork)
 		};
 		return answer;
 	}
@@ -183,10 +186,8 @@ public class Settlers{
 			if (stlr.currentStatus == 1 && stlr.rest >= maxRest && stlr.previousTask != null) {
 				stlr.currentTask = stlr.previousTask;
 				stlr.previousTask = null;
-				//stlr.setDestination(stlr.previousDestination.pop(), stlr.previousDestinationState.pop());
 			}			
 			//≈сли есть точка назначени€, то поселенец идет туда.
-			//if (stlr.destination != null) {
 			if (stlr.currentTask != null) {
 				if (stlr.currentTask.destination.x != stlr.x || stlr.currentTask.destination.y != stlr.y) {
 					if (stlr.currentStatus != 2) stlr.currentStatus = 2;
@@ -211,7 +212,6 @@ public class Settlers{
 					//улучшение скиллов.  аждый раз все дольше, в 10^workingSkill
 					if (stlr.workingSkills[stlr.resourceType] < 10) 
 						stlr.workingSkills[stlr.resourceType] += (float)(1.0 / (int)(Math.pow(10, (int)(stlr.workingSkills[stlr.resourceType]))));
-					//System.out.print((float)(1.0 / (int)(Math.pow(10, (int)(stlr.workingSkills[stlr.resourceType])))));
 					continue;
 				} else {
 					stlr.currentStatus = 1;
@@ -222,7 +222,50 @@ public class Settlers{
 			if (stlr.currentTask == null && stlr.nexTasks.peek() != null) {
 				//System.out.println("New task finded");
 				stlr.currentTask = stlr.nexTasks.poll();
-			}			
+				continue;
+			}
+			// огда с работой покончено, запланированных дел нет, но стоит авто-работа
+			if (stlr.currentTask == null && stlr.nexTasks.peek() == null && stlr.autoWork && stlr.resourceType != 0) {
+				//System.out.println("Starting look for work");
+				//System.out.println("workLookCurrentStep: " + stlr.workLookCurrentStep);
+				//System.out.println("workLookTurn: "+ stlr.workLookTurn);
+				
+				int taskType = stlr.resourceType;
+				stlr.workLookCurrentStep++; 
+				switch (stlr.workLookTurn % 4 + 1) {
+					case 1: 
+						stlr.workLookX += 1; //look at right
+						break;
+					case 2: 
+						stlr.workLookY += 1; //look at down
+						break;
+					case 3: 
+						stlr.workLookX -= 1; //look at left
+						break;
+					case 4: 
+						stlr.workLookY -= 1; //look at up
+						break;
+				}
+				if (stlr.workLookCurrentStep == stlr.workLookTurn / 2 + 1) {
+					stlr.workLookCurrentStep = 0;
+					stlr.workLookTurn++;
+				}
+				if (stlr.workLookX > mainMap.getMapWidth() && stlr.workLookY > mainMap.getMapHeight()) {
+					stlr.resourceType = 0;
+				}
+				try {
+					//System.out.println("Trying to check map cell: " + (stlr.x / 16 + stlr.workLookX) + " " + (stlr.y / 16 + stlr.workLookY));
+					if (mainMap.getTypeOfResource(stlr.x + stlr.workLookX * 16, stlr.y + stlr.workLookY * 16) == stlr.resourceType) {
+						stlr.setDestination(new Point(stlr.x + stlr.workLookX * 16, stlr.y + stlr.workLookY * 16), true, false);
+						stlr.workLookCurrentStep = 0;
+						stlr.workLookTurn = 0;
+						stlr.workLookX = 0;
+						stlr.workLookY = 0;
+					}
+				} catch (Exception ex) {
+					//System.out.println("Wrong map cell");
+				}
+			}
 		}
 		int offset = 0; //—двиг относительно первоначального массива.
 		// ѕока очередь не пуста, удал€ем.
@@ -234,10 +277,13 @@ public class Settlers{
 	
 	public void setDestination(int choosenSettler, Point p, boolean isRes, boolean isEnemy) {
 		settler[choosenSettler].setDestination(p, isRes, isEnemy);
+		changeAutoWorkState(choosenSettler, settler[choosenSettler].autoWork);
+		
 	}
 	
 	public void setNextDestination(int choosenSettler, Point p, boolean isRes, boolean isEnemy) {
 		settler[choosenSettler].setNextTask(p, isRes, isEnemy);
+		changeAutoWorkState(choosenSettler, settler[choosenSettler].autoWork);
 	}
 	
 	public void unChooseAll() {
@@ -260,6 +306,14 @@ public class Settlers{
 				break;
 			}
 		return choosenSettler;
+	}
+		
+	public void changeAutoWorkState(int settlerNumber, boolean newState) {
+		settler[settlerNumber].autoWork = newState;			
+		settler[settlerNumber].workLookCurrentStep = 0;
+		settler[settlerNumber].workLookTurn = 0;
+		settler[settlerNumber].workLookX = 0;
+		settler[settlerNumber].workLookY = 0;
 	}
 	
 	public int[] getSettlers(Point startPoint, Point endPoint) {
@@ -316,6 +370,12 @@ public class Settlers{
 		private LinkedList<Task> nexTasks;
 		private boolean isSelected = false;
 		
+		protected boolean autoWork = true;
+		protected int workLookCurrentStep = 0;
+		protected int workLookTurn = 0;
+		protected int workLookX = 0;
+		protected int workLookY =0;
+		
 		private int movingSpeed;		
 		
 		public Settler(int xCoord, int yCoord){
@@ -350,7 +410,7 @@ public class Settlers{
 				
 			}
 		}
-		
+				
 		public void setNextTask(Point dest, boolean isRes, boolean isEnemy) {
 			int destinationState = 1;
 			if (isRes) {
@@ -374,25 +434,20 @@ public class Settlers{
 			if (nexTasks.peek() != null) nexTasks.clear();
 			if (isRes) {
 				destinationState = 3;
-			}
-			else {
-				if (isEnemy){
+			} else if (isEnemy){
 				destinationState = 4;
-				}
+			} else {
+				resourceType = 0;
 			}
 			currentTask = new Task(p, destinationState);
 		}
-		
-		// public void setDestination(Point p, int pointState) {
-			// destination = p;
-			// destinationState = pointState;
-		// }
-		
+				
 		public void moveToPoint() {
 			int movingSpeed = maxMovingSpeed;
-			if (rest < 50) movingSpeed = (int)(movingSpeed/2);
+			if (rest < 50) movingSpeed = movingSpeed / 2;
 			int taskX = currentTask.destination.x;
 			int taskY = currentTask.destination.y;
+			if (x != taskX && y != taskY) movingSpeed = movingSpeed / 2;
 			//todo make it with collision
 			x = (Math.abs(x - taskX) > movingSpeed)?((x < taskX)? x + movingSpeed : x - movingSpeed) : taskX;
 			y = (Math.abs(y - taskY) > movingSpeed)?((y < taskY)? y + movingSpeed : y - movingSpeed) : taskY;

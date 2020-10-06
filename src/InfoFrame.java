@@ -25,14 +25,14 @@ public class InfoFrame extends JFrame {
 		setResizable(false);
 		setUndecorated(true);
 		setAlwaysOnTop(true);
-		
+				
 		infoLabel = new JLabel("");
 		mainPanel = new FrameMove(this);
 		
 		CustomListener cs = new CustomListener();
 		mainPanel.addMouseListener(cs);				
 		mainPanel.addMouseMotionListener(cs);
-		
+				
 		mainPanel.setLayout(new java.awt.GridLayout(0, 1, 0, 0));
 		mainPanel.add(infoLabel);
 		add(mainPanel);
@@ -48,7 +48,7 @@ public class InfoFrame extends JFrame {
 			setVisible(true);
 		}
 	}
-	
+		
 	public void setUnitInfo(String name, String age, String state, String workingType, String workingSkill){
 		isAboutPerson = true;
 		float workSk = Float.parseFloat(workingSkill);

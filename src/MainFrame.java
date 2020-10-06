@@ -156,9 +156,13 @@ public class MainFrame extends JFrame {
 	}
 	
 	public void paramsChanged() {
+		gameModeWidth = optionsWindow.windowWidth.getValue() + menuModeWidth;
+		gameModeHeight = optionsWindow.windowHeight.getValue();
+		setAlwaysOnTop(optionsWindow.onTopCheckBox.isSelected());
 		if (game != null) {
 			setSize(gameModeWidth, gameModeHeight);
 			setGridBagLayout();
+			game.drawPanel.repaint();
 			game.drawPanel.checkOffset();
 			game.gameSleepTime = (int)(100 / optionsWindow.gameSpeed);
 			game.drawSleepTime = (int)(1000/ optionsWindow.frameRate);
