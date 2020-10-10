@@ -27,6 +27,8 @@ public class OptionsFrame extends JFrame {
 	JSlider windowWidth;
 	JSlider windowHeight;
 	JCheckBox onTopCheckBox;
+	JCheckBox fullSreenCheckBox;
+	JCheckBox fullMapSizeCheckBox;
 	
 	JLabel audioOptions;
 	
@@ -35,6 +37,7 @@ public class OptionsFrame extends JFrame {
 	JSlider gameSpeedSlider;
 	
 	float gameSpeed = (float)1.0;
+	int maxGameSpeed = 5;
 	int frameRate = 60;
 			
 	public OptionsFrame(MainFrame parent) {
@@ -139,6 +142,35 @@ public class OptionsFrame extends JFrame {
 		graphicPanel.add(windowHeight);
 		onTopCheckBox = new JCheckBox("Окно игры поверх других окон");
 		graphicPanel.add(onTopCheckBox);
+		
+		fullSreenCheckBox = new JCheckBox("Окно на весь экран");
+		graphicPanel.add(fullSreenCheckBox);
+		fullSreenCheckBox.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				if (fullSreenCheckBox.isSelected()) {
+					onTopCheckBox.setSelected(true);
+					fullMapSizeCheckBox.setSelected(false);
+				}
+				fullMapSizeCheckBox.setEnabled(!fullSreenCheckBox.isSelected());
+				onTopCheckBox.setEnabled(!fullSreenCheckBox.isSelected());
+				windowHeight.setEnabled(!fullSreenCheckBox.isSelected());
+				windowWidth.setEnabled(!fullSreenCheckBox.isSelected());
+			}
+		});
+		
+		fullMapSizeCheckBox = new JCheckBox("Окно по размеру карты");
+		graphicPanel.add(fullMapSizeCheckBox);
+		fullMapSizeCheckBox.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				if (fullMapSizeCheckBox.isSelected()) {
+					fullSreenCheckBox.setSelected(false);
+				}
+				fullSreenCheckBox.setEnabled(!fullMapSizeCheckBox.isSelected());
+				windowHeight.setEnabled(!fullMapSizeCheckBox.isSelected());
+				windowWidth.setEnabled(!fullMapSizeCheckBox.isSelected());
+			}
+		});
+		
 		tabbedPane.addTab("Графика", null, graphicPanel, "Графические настройки");
 		
 		FrameMove audioPanel = new FrameMove(this);
@@ -164,11 +196,11 @@ public class OptionsFrame extends JFrame {
 		//framePateSpinner = new JSpinner(numbers);
 		//gameplayPanel.add(framePateSpinner);
 		gameplayPanel.add(new JLabel("Скорость игры"));
-		gameSpeedSlider = new JSlider(1, 4, (int)(gameSpeed * 2));
+		gameSpeedSlider = new JSlider(1, maxGameSpeed * 2, (int)(gameSpeed * 2));
 		gameSpeedSlider.setMajorTickSpacing(1);
 		gameSpeedSlider.setSnapToTicks(true);
 		Dictionary<Integer, JLabel> specialLabels = new Hashtable<>();
-		  for (int i = 1; i <= 4; i ++) {
+		  for (int i = 1; i <= maxGameSpeed * 2; i ++) {
 			 specialLabels.put(i, new JLabel(String.format("%1.1f", i / 2.0)));
 		  }
 		gameSpeedSlider.setLabelTable(specialLabels);

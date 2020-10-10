@@ -59,11 +59,7 @@ public class GameThread extends Thread{
 		//и передать его дважды, как MouseListener и как MouseMotionListener.
 		CustomListener cs = new CustomListener();
 		drawPanel.addMouseListener(cs);				
-		drawPanel.addMouseMotionListener(cs);
-				
-		mainFrame.add(drawPanel, mainFrame.constraintsForGamePanel);	
-		mainFrame.add(gameSupportPanel, mainFrame.constraintsForGSPanel);		
-		mainFrame.setVisible(true);
+		drawPanel.addMouseMotionListener(cs);	
 	}
 	
 	public void settlerAutoWorkChanged(boolean newState) {
@@ -93,7 +89,7 @@ public class GameThread extends Thread{
 			long gameEndTime = System.currentTimeMillis();
 			SimpleDateFormat formatter = new SimpleDateFormat("HHч: mmм: ssс");
 			formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-			JOptionPane.showMessageDialog(null,"<html>ПОТРАЧЕНО...<br>впустую " + formatter.format(gameEndTime - gameStartTime) + "</html>", "GameOver", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(mainWindow, "<html>ПОТРАЧЕНО...<br>впустую " + formatter.format(gameEndTime - gameStartTime) + "</html>", "GameOver", JOptionPane.INFORMATION_MESSAGE);
 			new Thread(()->{
 				mainWindow.gameButton.doClick();
 			}).start();	
@@ -104,7 +100,7 @@ public class GameThread extends Thread{
 		long gameEndTime = System.currentTimeMillis();
 		SimpleDateFormat formatter = new SimpleDateFormat("HHч mmм ssс");
 		formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-		JOptionPane.showMessageDialog(null,"<html> Вы собрали всё дерево и весь камень за: "
+		JOptionPane.showMessageDialog(mainWindow,"<html> Вы собрали всё дерево и весь камень за: "
 										+ "<br>" + formatter.format(gameEndTime - gameStartTime)
 										+"</html>"
 										, "Поздравляю!!!", JOptionPane.INFORMATION_MESSAGE);
@@ -135,7 +131,7 @@ public class GameThread extends Thread{
 	}
 	
 	public void run() {
-		//try {
+		try {
 			gameStartTime = System.currentTimeMillis();	
 			new DrawThread().start();
 			for (;(gameStopped & 4) != 4;){ //пока бит остановки не появится при запуске функции stopGame
@@ -170,12 +166,12 @@ public class GameThread extends Thread{
 				try { Thread.sleep((gameSleepTime > passedTime)? gameSleepTime - passedTime: 0); } catch (Exception ex) {};
 			}
 			gameStopped = (byte)(gameStopped | 1); //сигнал о завершении первого потока
-		// } catch (Exception ex) {
-			// JOptionPane.showMessageDialog(null,
-			// "<html>Непредвиденные обстоятельства. <br>Сообщение от спонсора: " + ex.toString(), 
-			// "Ай яй яй", JOptionPane.ERROR_MESSAGE);
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(mainWindow,
+			"<html>Непредвиденные обстоятельства. <br>Сообщение от спонсора: " + ex.toString(), 
+			"Ай яй яй", JOptionPane.ERROR_MESSAGE);
 			
-		// }
+		}
 	}
 	
 	private class CustomListener implements MouseInputListener{
@@ -367,13 +363,7 @@ public class GameThread extends Thread{
 				if (e.getButton() == 3 && choosenSettlers != null){
 					int localChoosenSettler = settlers.isSettlerChoosen(mapX, mapY);
 					if (localChoosenSettler < 0) {
-						// if (choosenSettler >= 0) 
-							// if (e.isShiftDown()) {
-								// //System.out.println("next task setted");
-								// settlers.setNextDestination(choosenSettler, new Point(mapX, mapY), mainMap.isCellIsRes(mapX, mapY), false); 
-							// } else
-								// settlers.setDestination(choosenSettler, new Point(mapX, mapY), mainMap.isCellIsRes(mapX, mapY), false); 		//settlerMenu
-							if (e.isShiftDown()) {
+						if (e.isShiftDown()) {
 								for (int i : choosenSettlers)
 									settlers.setNextDestination(i, new Point(mapX, mapY), mainMap.isCellIsRes(mapX, mapY), false);
 							} else {
@@ -381,13 +371,16 @@ public class GameThread extends Thread{
 									settlers.setDestination(i, new Point(mapX, mapY), mainMap.isCellIsRes(mapX, mapY), false);
 							}
 					} else {
-						for (int i = 0; i < choosenSettlers.length; i++)
+						int i = 0; 
+						for (; i < choosenSettlers.length; i++)
 							if (choosenSettlers[i] == localChoosenSettler) {
 								String settlerInfo [] = settlers.getSettlerInfo(localChoosenSettler);
 								settlerMenu.setLocation(currentMousePoint.x, currentMousePoint.y);
 								settlerMenu.setUnitInfo(settlerInfo[0], settlerInfo[5]);
 								break; //дальше искать смысла нет.
 							}
+						if (i == choosenSettlers.length)
+							settlers.unChooseOne(localChoosenSettler);
 					}
 				}
 				if (e.getButton() == 4){

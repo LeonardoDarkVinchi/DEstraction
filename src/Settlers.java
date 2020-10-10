@@ -120,6 +120,14 @@ public class Settlers{
 			i++;
 			//Сперва идет проверка состояния поселенца, способен ли он работать и т.д.
 			//Поселенец умирает, когда HP доходит до нуля.
+			stlr.daysFromBirthday++;
+			if (stlr.daysFromBirthday > 365) {
+				stlr.age++;
+				stlr.daysFromBirthday = 0;
+			}
+			if (stlr.age > 50 && (int)(Math.random() * 1000 / stlr.age) == 0) 
+				stlr.maxHP--;
+			if (stlr.hp > stlr.maxHP) stlr.hp = stlr.maxHP;
 			if (stlr.hp <= 0) {
 				settlersToDelete.offer(i); // Помещаем в очередь на удаление
 				//deleteSettler(i);
@@ -170,15 +178,6 @@ public class Settlers{
 			if ((stlr.currentStatus != 1 || stlr.currentStatus != 4) && stlr.rest == 0) {
 				stlr.previousTask = stlr.currentTask;
 				stlr.currentTask = null;
-				// if (stlr.destination == null) {
-					// stlr.previousDestination = new Point(stlr.x, stlr.y));
-					// stlr.previousDestinationState = stlr.currentStatus;
-				// }
-				// if (stlr.destination != null) {
-					// stlr.previousDestination.push(stlr.destination);
-					// stlr.previousDestinationState.push(stlr.destinationState);
-					// stlr.destination = null;
-				// }
 				stlr.currentStatus = 1;
 				continue;
 			}
@@ -226,10 +225,6 @@ public class Settlers{
 			}
 			//Когда с работой покончено, запланированных дел нет, но стоит авто-работа
 			if (stlr.currentTask == null && stlr.nexTasks.peek() == null && stlr.autoWork && stlr.resourceType != 0) {
-				//System.out.println("Starting look for work");
-				//System.out.println("workLookCurrentStep: " + stlr.workLookCurrentStep);
-				//System.out.println("workLookTurn: "+ stlr.workLookTurn);
-				
 				int taskType = stlr.resourceType;
 				stlr.workLookCurrentStep++; 
 				switch (stlr.workLookTurn % 4 + 1) {
@@ -254,7 +249,6 @@ public class Settlers{
 					stlr.resourceType = 0;
 				}
 				try {
-					//System.out.println("Trying to check map cell: " + (stlr.x / 16 + stlr.workLookX) + " " + (stlr.y / 16 + stlr.workLookY));
 					if (mainMap.getTypeOfResource(stlr.x + stlr.workLookX * 16, stlr.y + stlr.workLookY * 16) == stlr.resourceType) {
 						stlr.setDestination(new Point(stlr.x + stlr.workLookX * 16, stlr.y + stlr.workLookY * 16), true, false);
 						stlr.workLookCurrentStep = 0;
@@ -346,6 +340,7 @@ public class Settlers{
 		public String name;
 		public String sex;
 		public int age;
+		public int daysFromBirthday;
 		public int resourceCount;
 		public int resourceType = 0;
 		public int x;
@@ -388,6 +383,8 @@ public class Settlers{
 			workingSkills[1] = 0;
 			workingSkills[2] = 0;
 			workingSkills[3] = 0;
+			
+			daysFromBirthday = 0;
 			
 			walk = new Animation();
 			work = new Animation();

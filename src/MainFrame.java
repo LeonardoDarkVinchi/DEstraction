@@ -99,8 +99,8 @@ public class MainFrame extends JFrame {
 			public void actionPerformed(ActionEvent paramAnonymousActionEvent) {
 				if (game == null)				
 					try {
-						changeWindow();
 						game = new GameThread(thisFrame);
+						changeWindow();
 						game.start();
 						setVisible(true);
 						gameButton.setText("Стоп");
@@ -160,6 +160,19 @@ public class MainFrame extends JFrame {
 		gameModeHeight = optionsWindow.windowHeight.getValue();
 		setAlwaysOnTop(optionsWindow.onTopCheckBox.isSelected());
 		if (game != null) {
+			if (optionsWindow.fullSreenCheckBox.isSelected()) {
+				Rectangle display = DisplayParams.getDefaultScreenBounds();
+				gameModeWidth = display.width;
+				gameModeHeight = display.height;
+				setLocation(display.x, display.y);
+				menuPanel.setMovable(false);
+			} else {
+				menuPanel.setMovable(true);
+			}
+			if (optionsWindow.fullMapSizeCheckBox.isSelected()) {
+				gameModeWidth = game.mainMap.getMapWidth() + menuModeWidth;
+				gameModeHeight = game.mainMap.getMapHeight();
+			}
 			setSize(gameModeWidth, gameModeHeight);
 			setGridBagLayout();
 			game.drawPanel.repaint();
@@ -181,6 +194,7 @@ public class MainFrame extends JFrame {
 		getContentPane().remove(menuPanel);
 		setLayout(new GridLayout(0, 1, 0, 0));
 		add(menuPanel);
+		menuPanel.setMovable(true);
 		setSize(menuModeWidth, menuModeHeight);
 	}
 	
@@ -188,8 +202,22 @@ public class MainFrame extends JFrame {
 		getContentPane().remove(menuPanel);
 		gameGridLayout = new GridBagLayout();
 		setLayout(gameGridLayout);
+		if (optionsWindow.fullSreenCheckBox.isSelected()) {
+			Rectangle display = DisplayParams.getDefaultScreenBounds();
+			gameModeWidth = display.width;
+			gameModeHeight = display.height;
+			setLocation(display.x, display.y);
+			menuPanel.setMovable(false);
+		}
+		if (optionsWindow.fullMapSizeCheckBox.isSelected()) {
+			gameModeWidth = game.mainMap.getMapWidth() + menuModeWidth;
+			gameModeHeight = game.mainMap.getMapHeight();
+		}
 		setSize(gameModeWidth, gameModeHeight);
+		
 		add(menuPanel, constraintsForMenuPanel);
+		add(game.drawPanel, constraintsForGamePanel);	
+		add(game.gameSupportPanel, constraintsForGSPanel);	
 		
 		setGridBagLayout();
 	}

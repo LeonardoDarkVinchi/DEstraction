@@ -146,6 +146,7 @@ public class Map{
 	}
 	
 	private Cell getCellFromCoord(int xCoord, int yCoord) {
+		if (xCoord < 0 || yCoord < 0) return null;
 		return mapCells[(int)(xCoord/cellWidth)][(int)(yCoord/cellHeight)];
 	}
 	

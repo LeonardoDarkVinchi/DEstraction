@@ -15,6 +15,7 @@ public class FrameMove extends JPanel {
 
     private Point position;
 	protected final JFrame parent;
+	protected boolean movable = true;
 	
 	//public FrameMove(final AppWindow newParent){	
 	public FrameMove(final JFrame newParent){	
@@ -30,7 +31,7 @@ public class FrameMove extends JPanel {
 		addMouseMotionListener(new MouseMotionAdapter(){
 			@Override
 			public void mouseDragged(MouseEvent e){
-				grabbedMove(e);
+				if (movable) grabbedMove(e);
 			}
 		});
 	}
@@ -41,5 +42,9 @@ public class FrameMove extends JPanel {
 		int X = thisX + e.getX() - position.x;
 		int Y = thisY + e.getY() - position.y;
 		parent.setLocation(X, Y);
+	}
+	
+	public void setMovable(boolean newState) {
+		movable = newState;
 	}
 }
