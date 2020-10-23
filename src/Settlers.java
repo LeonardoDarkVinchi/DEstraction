@@ -51,15 +51,6 @@ public class Settlers{
 		gameSupportPanel.settlersCountChanged();
 		gameThread.settlerDeathAlert(settlerNumber);
 	}
-	
-	// public boolean checkIsSettlerAlive(int settlerNumber){
-		// if (settlerNumber != lastDeletedSettler) return true;
-		// else {
-			// lastDeletedSettler = -13;
-			// return false;
-		// }
-	// }
-	//-------------------------------------------------------
 
 	public void drawSettlers(Graphics2D g2d, Point offset){
 		for (Settler setlr : settler)
@@ -119,7 +110,7 @@ public class Settlers{
 			//Ќомер текущего поселенца, нужен дл€ того чтобы убить эту суку!
 			i++;
 			//—перва идет проверка состо€ни€ поселенца, способен ли он работать и т.д.
-			//ѕоселенец умирает, когда HP доходит до нул€.
+			//»зменение возраста. ќдин тик = одному дню.
 			stlr.daysFromBirthday++;
 			if (stlr.daysFromBirthday > 365) {
 				stlr.age++;
@@ -128,6 +119,7 @@ public class Settlers{
 			if (stlr.age > 50 && (int)(Math.random() * 1000 / stlr.age) == 0) 
 				stlr.maxHP--;
 			if (stlr.hp > stlr.maxHP) stlr.hp = stlr.maxHP;
+			//ѕоселенец умирает, когда HP доходит до нул€.
 			if (stlr.hp <= 0) {
 				settlersToDelete.offer(i); // ѕомещаем в очередь на удаление
 				//deleteSettler(i);
@@ -395,7 +387,7 @@ public class Settlers{
 		public void drawSettler(Graphics2D g2d, Point offset){
 			//Graphics2D g2d = (Graphics2D) g;
 			if (isSelected) {
-				g2d.setColor(new Color(0, 0, 0));
+				g2d.setColor(Colors.black);
 				g2d.draw(new Ellipse2D.Float((x - (width) + offset.x), (y + offset.y), 
 													(width*2), height));
 			}

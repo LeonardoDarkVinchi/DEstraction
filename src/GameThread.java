@@ -18,11 +18,13 @@ public class GameThread extends Thread{
 	
 	GameArena drawPanel;
 	GameSupportPanel gameSupportPanel;
-	MainFrame mainWindow;
-	Map mainMap;
+	MainFrame mainWindow;	
 	InfoFrame infoWindow;
 	PersonalMenu settlerMenu;
+	
+	Map mainMap;
 	Settlers settlers;	
+	Structures structures;
 	
 	long gameStartTime;
 	
@@ -45,10 +47,11 @@ public class GameThread extends Thread{
 		mainWindow = mainFrame;
 		infoWindow = new InfoFrame();
 		settlerMenu = new PersonalMenu(this);
-		drawPanel = new GameArena(mainMap, settlers);
 		gameSupportPanel = new GameSupportPanel(mainMap, settlers);
 		settlers.transmitGameSupportPanel(gameSupportPanel);
 		settlers.transmitMap(mainMap);
+		structures = new Structures(mainMap);
+		drawPanel = new GameArena(mainMap, settlers, structures);
 		
 		gameSleepTime = (int)(100 / mainFrame.optionsWindow.gameSpeed);
 		drawSleepTime = (int)(1000/ mainFrame.optionsWindow.frameRate);

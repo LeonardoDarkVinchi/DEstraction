@@ -17,6 +17,7 @@ public class GameArena extends JPanel{
 	
 	private Map mainMap;
 	Settlers settlers;
+	Structures structures;
 	
 	private Point position;
 	public int offsetX = 0;
@@ -30,9 +31,10 @@ public class GameArena extends JPanel{
 	
 	public int choosenSetlrs[];
 	
-	GameArena(Map transMap, Settlers transSettlers) {
+	GameArena(Map transMap, Settlers transSettlers, Structures transStructures) {
 		mainMap = transMap;
 		settlers = transSettlers;
+		structures = transStructures;
 	}
 	
 	public void setPosition(Point p) {
@@ -76,13 +78,13 @@ public class GameArena extends JPanel{
 			RenderingHints.VALUE_ANTIALIAS_ON);
 			
 		if (getWidth() > mainMap.getMapWidth() || getHeight() > mainMap.getMapHeight()) {
-			g2d.setColor(new Color(0,0,0));
+			g2d.setColor(Colors.black);
 			g2d.fillRect(0, 0, getWidth(), getHeight());
 		}
 		Point offsetPoint = new Point(offsetX, offsetY);	
 		mainMap.paintMap(g2d, offsetPoint);
 		settlers.drawSettlers(g2d, offsetPoint);
-		g2d.setColor(new Color(0,0,0));
+		g2d.setColor(Colors.black);
 		if (isRect) g2d.drawRect(Math.min(x1,x2), Math.min(y1,y2), Math.abs(x1-x2), Math.abs(y1-y2));
 	}
 	
