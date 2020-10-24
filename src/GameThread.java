@@ -218,7 +218,6 @@ public class GameThread extends Thread{
 			}
 			
 			if (isMiddlePressed) {
-				//System.out.println("Is middle " + isMiddlePressed);
 				drawPanel.setOffset(new Point(e.getX(), e.getY()));
 			}
 		}
@@ -246,18 +245,12 @@ public class GameThread extends Thread{
 							if (choosenSettlers != null) {
 								if (choosenSettlers.length == 1) {
 									settlers.unChooseOne(choosenSettlers[0]);
-									//choosenSettler = -13;
 								} else 
 									settlers.unChooseAll();
 								choosenSettlers = null;
 							}
 							if (Math.abs(startPoint.x - endPoint.x) > 2 && Math.abs(startPoint.y - endPoint.y) > 2) {
 								choosenSettlers = settlers.getSettlers(startPoint, endPoint);
-								// if (choosenSettlers != null)
-									// if (choosenSettlers.length == 1) {
-										// choosenSettler = choosenSettlers[0];
-										// choosenSettlers = null;
-									// }
 							} else {
 								int localChoosenSettler = settlers.isSettlerChoosen(mapX, mapY);
 								if (localChoosenSettler < 0) {
@@ -266,7 +259,6 @@ public class GameThread extends Thread{
 									infoWindow.setLocation(currentMousePoint.x, currentMousePoint.y);
 								} else {
 									choosenSettlers = new int [] {localChoosenSettler};
-									//choosenSettler = localChoosenSettler;
 									String settlerInfo [] = settlers.getSettlerInfo(localChoosenSettler);
 									infoWindow.setUnitInfo(settlerInfo[0], settlerInfo[1], settlerInfo[2], settlerInfo[3], settlerInfo[4]);
 									infoWindow.setLocation(currentMousePoint.x, currentMousePoint.y);
@@ -291,43 +283,13 @@ public class GameThread extends Thread{
 										choosenSettlers = Arrays.copyOf(choosenSettlers, choosenSettlers.length + newSettlersChoosen.length);
 										System.arraycopy(newSettlersChoosen, 0, choosenSettlers, choosenSettlers.length - newSettlersChoosen.length, newSettlersChoosen.length);
 									} else { //≈сли никого раньше не было выбрано, выбираем тех что есть.
-										// if (choosenSettler < 0)
 											choosenSettlers = newSettlersChoosen;
-										// else { //≈сли же был всего один, тогда запихиваем его в конец. ѕор€док номеров не важен.
-											// for (int i = 0; i < newSettlersChoosen.length; i++)
-												// if (newSettlersChoosen[i] == choosenSettler) {
-													// for(int k = i; k < newSettlersChoosen.length - 1; k++)
-														// newSettlersChoosen[k] = newSettlersChoosen[k+1];
-													// newSettlersChoosen = Arrays.copyOf(newSettlersChoosen, newSettlersChoosen.length - 1);
-												// }
-											// gameSupportPanel.settlerUnchoosen();
-											// choosenSettlers = Arrays.copyOf(newSettlersChoosen, newSettlersChoosen.length + 1);
-											// choosenSettlers[choosenSettlers.length - 1] = choosenSettler;
-											// choosenSettler = -13;
-										// }
 									}
-									// //» в конце провер€ем, что если в рамке всего один додик, то выбираем его как одного.
-									// if (choosenSettlers.length == 1) {
-											// choosenSettler = choosenSettlers[0];
-											// choosenSettlers = null;
-										// }
 								} //если никто не попал вообще насрать.
 							} else { 
 								int localChoosenSettler = settlers.isSettlerChoosen(mapX, mapY);
 								//≈сли же кликом попали по юниту
-								//////////////////////
 								if (localChoosenSettler >= 0) {
-									//≈сли был один, то либо добавл€ем нового, либо если клик был по уже выбранному, отмен€ем выделение
-									// if (choosenSettler >= 0 && choosenSettlers == null) {
-										// gameSupportPanel.settlerUnchoosen();
-										// if (localChoosenSettler != choosenSettler) {
-											// choosenSettlers = new int[] {choosenSettler, localChoosenSettler};
-										// } else {
-											// settlers.unChooseOne(choosenSettler);
-										// }
-										// choosenSettler = -13;
-									//≈сли был не один, то просто добавлем к массиву	
-									//} else if (choosenSettler < 0 && choosenSettlers != null) {
 									if (choosenSettlers != null) {
 										//провер€ем, был ли он уже в списке
 										int i = 0;
@@ -344,7 +306,6 @@ public class GameThread extends Thread{
 										//≈сли цикл прерван, то i не достигент длины массива, значит был встречен повтор.
 										if (i < choosenSettlers.length) {
 											if (choosenSettlers.length == 0) {
-												//choosenSettler = choosenSettlers[0];
 												choosenSettlers = null;
 											}
 										} else { 
@@ -353,9 +314,8 @@ public class GameThread extends Thread{
 										}
 									//≈сли вообще никого не было, записываем его как одного выбранного.
 									} else {
-									//} else if (choosenSettler < 0 && choosenSettlers == null) {
 										choosenSettlers = new int[] {localChoosenSettler};
-									}// else System.out.println("Error! We have array of choosens and a choosen one!");
+									}
 								} 
 							}
 						} //else isShiftDown
@@ -405,7 +365,6 @@ public class GameThread extends Thread{
 				long passedTime = System.currentTimeMillis() - startTime;
 				//System.out.println("passed: " + passedTime);
 				try { Thread.sleep((drawSleepTime > passedTime)? drawSleepTime - passedTime: 0); } catch (Exception ex) {};
-				//try { Thread.sleep(drawSleepTime); } catch (Exception ex) {};
 			}
 			gameStopped = (byte)(gameStopped | 2); //сигнал о завершении второго потока
 		}			

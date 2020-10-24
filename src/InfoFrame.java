@@ -21,7 +21,6 @@ public class InfoFrame extends JFrame {
 	boolean isAboutPerson;
 			
 	public InfoFrame() {
-		//setSize(100, 50);
 		setResizable(false);
 		setUndecorated(true);
 		setAlwaysOnTop(true);

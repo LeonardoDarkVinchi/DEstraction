@@ -55,9 +55,6 @@ public class GameArena extends JPanel{
 		if (offsetY < getHeight() - mainMap.getMapHeight()) offsetY = getHeight() - mainMap.getMapHeight();
 		if (offsetX > 0) offsetX = 0;
 		if (offsetY > 0) offsetY = 0;
-		
-		// System.out.println("getHeight() - mainMap.getMapHeight(): " + (getHeight() - mainMap.getMapHeight()));
-		// System.out.println("After check: " + offsetX + " " + offsetY);
 	}
 	
 	public void setRectCoords(Point startPoint, Point endPoint) {
@@ -84,6 +81,7 @@ public class GameArena extends JPanel{
 		Point offsetPoint = new Point(offsetX, offsetY);	
 		mainMap.paintMap(g2d, offsetPoint);
 		settlers.drawSettlers(g2d, offsetPoint);
+		structures.drawStructures(g2d, offsetPoint);
 		g2d.setColor(Colors.black);
 		if (isRect) g2d.drawRect(Math.min(x1,x2), Math.min(y1,y2), Math.abs(x1-x2), Math.abs(y1-y2));
 	}

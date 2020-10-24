@@ -75,13 +75,12 @@ public class Structures{
 		Structure(Structure byStructureType, Point pos) {
 			isPrimitive = byStructureType.isPrimitive;
 			name = byStructureType.name;
-			// cellColor = byStructureType.cellColor;
+			structColor = byStructureType.structColor;
 			// cellPic = byStructureType.cellPic;
 			structureType = byStructureType.structureType;
 		}
 		
 		public void drawStructure(Graphics2D g2d, Point offset){
-			//Graphics2D g2d = (Graphics2D) g;
 			if (isSelected) {
 				g2d.setColor(Colors.black);
 				g2d.draw(new Ellipse2D.Float((x - (int)(width/2) + offset.x), (y + offset.y), 

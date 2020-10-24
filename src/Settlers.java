@@ -385,7 +385,6 @@ public class Settlers{
 		}
 		
 		public void drawSettler(Graphics2D g2d, Point offset){
-			//Graphics2D g2d = (Graphics2D) g;
 			if (isSelected) {
 				g2d.setColor(Colors.black);
 				g2d.draw(new Ellipse2D.Float((x - (width) + offset.x), (y + offset.y), 

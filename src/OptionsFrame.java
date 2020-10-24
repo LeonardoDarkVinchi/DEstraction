@@ -35,6 +35,7 @@ public class OptionsFrame extends JFrame {
 	JLabel gameplayOptions;
 	JSlider frameRateSlider;
 	JSlider gameSpeedSlider;
+	JCheckBox customCursorCheckBox;
 	
 	float gameSpeed = (float)1.0;
 	int maxGameSpeed = 5;
@@ -192,9 +193,6 @@ public class OptionsFrame extends JFrame {
 		frameRateSlider.setPaintTicks(true);
 		frameRateSlider.setPaintLabels(true);
 		gameplayPanel.add(frameRateSlider);
-		//SpinnerModel numbers = new SpinnerNumberModel(frameRate, 1, 60, 1);
-		//framePateSpinner = new JSpinner(numbers);
-		//gameplayPanel.add(framePateSpinner);
 		gameplayPanel.add(new JLabel("Скорость игры"));
 		gameSpeedSlider = new JSlider(1, maxGameSpeed * 2, (int)(gameSpeed * 2));
 		gameSpeedSlider.setMajorTickSpacing(1);
@@ -207,7 +205,9 @@ public class OptionsFrame extends JFrame {
 		gameSpeedSlider.setPaintTicks(true);
 		gameSpeedSlider.setPaintLabels(true);
 		gameplayPanel.add(gameSpeedSlider);
-
+		customCursorCheckBox = new JCheckBox("Кастомный курсор");
+		customCursorCheckBox.setSelected(true);
+		gameplayPanel.add(customCursorCheckBox);
 				
 		tabbedPane.addTab("Игровые", gameplayPanel);
 	}

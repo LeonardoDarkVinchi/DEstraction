@@ -130,10 +130,8 @@ public class Map{
 	}
 	
 	public void paintMap(Graphics2D g2d, Point offset) {
-		//Graphics2D g2d = (Graphics2D) g;
-		
-		for (int i = 0; i < mapCells.length; i++)
-			for(int j = 0; j < mapCells[0].length; j++) {
+		for (int i = -(int)(offset.x / cellWidth); i < ((((gameThread.drawPanel.getWidth() - offset.x) / cellWidth) + 1 < mapCells.length)?((gameThread.drawPanel.getWidth() - offset.x) / cellWidth) + 1 : mapCells.length); i++)
+			for(int j = -(int)(offset.y / cellHeight); j < ((((gameThread.drawPanel.getHeight() - offset.y) / cellHeight) + 1 < mapCells.length)?((gameThread.drawPanel.getHeight() - offset.y) / cellHeight) + 1 : mapCells.length); j++) {
 				if (mapCells[i][j].isPrimitive) {
 					g2d.setColor(mapCells[i][j].cellColor);
 					g2d.fillRect(i * cellWidth + offset.x, j * cellHeight + offset.y, cellWidth, cellHeight);

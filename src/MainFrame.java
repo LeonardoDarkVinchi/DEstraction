@@ -6,10 +6,13 @@
 package DEstraction;
 import DEstraction.*;
 
+import javax.imageio.*;
 import java.awt.*;
 import javax.swing.*;
 import java.io.*;
+import java.lang.*;
 import java.awt.event.*;
+import javax.swing.event.*;
 
 
 public class MainFrame extends JFrame {
@@ -33,7 +36,6 @@ public class MainFrame extends JFrame {
 	
 	public MainFrame() {
 		super("DEstraction");
-		//setExtendedState(JFrame.MAXIMIZED_BOTH);
 		setResizable(false);
 		setDefaultCloseOperation(3);
 		setUndecorated(true);
@@ -61,11 +63,12 @@ public class MainFrame extends JFrame {
 		
 		setConsttraints();
 		setActionListeners();
+		setCustomCursor(true);		
 		
 		setVisible(true);
 	}
  
-	private void setConsttraints(){	
+	private void setConsttraints() {	
 		constraintsForMenuPanel = new GridBagConstraints();
 		constraintsForMenuPanel.gridx = 0;
 		constraintsForMenuPanel.gridwidth = 1; 
@@ -94,7 +97,7 @@ public class MainFrame extends JFrame {
 		constraintsForGSPanel.weighty = 1.0;
 	}
 	
-	private void setActionListeners(){
+	private void setActionListeners() {
 		gameButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(ActionEvent paramAnonymousActionEvent) {
 				if (game == null)				
@@ -155,10 +158,25 @@ public class MainFrame extends JFrame {
 		});
 	}
 	
+	private void setCustomCursor(boolean isOn) {
+		if (isOn) {
+			Image myImage = null;
+			try {
+				myImage = ImageIO.read(getClass().getResource("img/cursor.gif"));
+			} catch (Exception ex) {};
+			if (myImage != null) {
+				setCursor(Toolkit.getDefaultToolkit().createCustomCursor(myImage, new Point(0,0),""));
+			}
+		} else {
+			setCursor(Cursor.getDefaultCursor());
+		}
+	}
+	
 	public void paramsChanged() {
 		gameModeWidth = optionsWindow.windowWidth.getValue() + menuModeWidth;
 		gameModeHeight = optionsWindow.windowHeight.getValue();
 		setAlwaysOnTop(optionsWindow.onTopCheckBox.isSelected());
+		setCustomCursor(optionsWindow.customCursorCheckBox.isSelected());
 		if (game != null) {
 			if (optionsWindow.fullSreenCheckBox.isSelected()) {
 				Rectangle display = DisplayParams.getDefaultScreenBounds();
@@ -174,8 +192,8 @@ public class MainFrame extends JFrame {
 				gameModeHeight = game.mainMap.getMapHeight();
 			}
 			setSize(gameModeWidth, gameModeHeight);
-			setGridBagLayout();
-			game.drawPanel.repaint();
+			setGridBagLayout();  
+			game.drawPanel.setSize(gameModeWidth - menuModeWidth, gameModeHeight);
 			game.drawPanel.checkOffset();
 			game.gameSleepTime = (int)(100 / optionsWindow.gameSpeed);
 			game.drawSleepTime = (int)(1000/ optionsWindow.frameRate);
@@ -187,7 +205,6 @@ public class MainFrame extends JFrame {
 		if (getWidth() == menuModeWidth) 
 			changeWindowToGameMode();
 		else changeWindowToMenuMode();
-		//setVisible(true);
 	}
 	
 	private void changeWindowToMenuMode() {
@@ -226,9 +243,6 @@ public class MainFrame extends JFrame {
 		gameGridLayout.columnWidths = new int[2];
 		gameGridLayout.columnWidths[0] = menuModeWidth;
 		gameGridLayout.columnWidths[1] = gameModeWidth - menuModeWidth;
-		// for (int i = 1; i < gbl.columnWidths.length; i++) {
-			// gbl.columnWidths[i] = (gameModeWidth - menuModeWidth)/gbl.columnWidths.length; 
-		// };
 		
 		gameGridLayout.rowHeights = new int[3];
 		gameGridLayout.rowHeights[0] = menuModeHeight;
