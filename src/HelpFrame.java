@@ -100,9 +100,7 @@ public class HelpFrame extends JFrame {
 						+"ХЗ что там на счет тебя...<br>"
 						+"Да и еще кое-что: люди не живут вечно... Муахахаха!!!<br><br>"
 						+"И помни, я слежу за тобой! Ты зашел сюда уже " + countOfOpening + " раз. <br>"
-						+"Будь на чеку и не забудь доложить " + 
-						((countOfOpening == 1)?"кучу.":
-						(countOfOpening == 2)?"<s>кучу</s> о найденных багах.": "о найденных багах.")
+						+"Будь на чеку и не забудь доложить о найденных багах."
 						+"<br><br>Текущая сборка № " + getVersion()
 						+"<br><em>	Copyright Dark Dead Dragon."
 						+"<br>	License: GNU GPLv3</em>"

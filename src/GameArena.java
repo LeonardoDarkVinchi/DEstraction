@@ -50,7 +50,6 @@ public class GameArena extends JPanel{
 	}
 	
 	public void checkOffset() {
-		//System.out.println("Checking offset: " + offsetX + " " + offsetY);
 		if (offsetX < getWidth() - mainMap.getMapWidth()) offsetX = getWidth() - mainMap.getMapWidth();
 		if (offsetY < getHeight() - mainMap.getMapHeight()) offsetY = getHeight() - mainMap.getMapHeight();
 		if (offsetX > 0) offsetX = 0;

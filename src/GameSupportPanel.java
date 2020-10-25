@@ -17,27 +17,37 @@ public class GameSupportPanel extends JPanel{
 	
 	private Map mainMap;
 	Settlers settlers;
+	Structures structures;
 	
 	int wood = 0;
 	int stone = 0;
 	int food = 100;
 	
-	int choosenSettler; 
+	int choosenSettler = -13; 
+	int choosenStructure;
 	
 	JLabel resourcesInfo;
 	JLabel currentSettlersCount;
+	JPanel thirdPanel;
+	JPanel structureButtonsPanel;
 	JLabel settlerInfo;
-	JButton killSettler;
+	JButton specialButton;
 	
-	public GameSupportPanel(Map transMap, Settlers transSettlers) {
+	public GameSupportPanel(Map transMap, Settlers transSettlers, Structures transStructures) {
 		mainMap = transMap;
 		settlers = transSettlers;
+		structures = transStructures;
 		
 		resourcesInfo = new JLabel("");
 		currentSettlersCount = new JLabel("");
+		thirdPanel = new JPanel();
+		JScrollPane scrollPane = new JScrollPane(thirdPanel);
+		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		structureButtonsPanel = structures.madePanelWithBuildButtons();
 		settlerInfo = new JLabel("");
-		killSettler = new JButton("Не нажимать!");
-		killSettler.setMargin(new Insets(0, 0, 0, 0));
+		specialButton = new JButton("Построить");
+		specialButton.setMargin(new Insets(0, 0, 0, 0));
 		
 		settlersCountChanged();
 		resourseChanged(0, 0);		
@@ -46,14 +56,18 @@ public class GameSupportPanel extends JPanel{
 		
 		add(resourcesInfo);
 		add(currentSettlersCount);
-		add(settlerInfo);
-		add(killSettler);
+		add(scrollPane);
+		add(specialButton);
 		
-		killSettler.setVisible(false);
-		killSettler.addActionListener(new java.awt.event.ActionListener() {
+		specialButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(ActionEvent paramAnonymousActionEvent) {
-				settlers.deleteSettler(choosenSettler);
-				killSettler.setText("Суисайд");
+				if (choosenSettler != -13)
+					settlers.deleteSettler(choosenSettler);
+				else {
+					clearThirdPanel();
+					thirdPanel.add(structureButtonsPanel);
+					thirdPanel.repaint();
+				}
 			}
 		});
 	}
@@ -71,33 +85,47 @@ public class GameSupportPanel extends JPanel{
 							+"</html>");
 	}
 	
-	public void settlerChoosen(int settlerNumber){
-			choosenSettler = settlerNumber;
-			String stlrInfo[] = settlers.getSettlerFullInfo(choosenSettler);
-			settlerInfo.setText("<html>Имя: " + stlrInfo[0]
-								+"<br>Возраст: "+ stlrInfo[1]
-								+"<br>Здоровье: "+ stlrInfo[2]
-								+"<br>Cытость: "+ stlrInfo[3]
-								+"<br>Бодрость: "+ stlrInfo[4]
-								+"<br>Статус: "+ stlrInfo[5]
-								+"</html>");
-			killSettler.setVisible(true);
-	}
-	
-	public void settlersChoosen(int settlersNumber){
-		settlerInfo.setText("<html>Выбрано: " + settlersNumber + "</html>");
-	}
-	
-	public void settlerUnchoosen(){
-		choosenSettler = -13;
-		settlerInfo.setText("");
-		killSettler.setVisible(false);
-	}
-	
 	public void settlersCountChanged(){
 		int mans = settlers.getMansCount();
 		currentSettlersCount.setText("<html>Население: " + settlers.getSettlersCount()
 									+"<br>М/Ж: "+ mans + " / " + (settlers.getSettlersCount() - mans)
 									+"</html>");
+	}
+	
+	public void settlerChoosen(int settlerNumber){
+		clearThirdPanel();
+		thirdPanel.add(settlerInfo);
+		
+		choosenSettler = settlerNumber;
+		String stlrInfo[] = settlers.getSettlerFullInfo(choosenSettler);
+		settlerInfo.setText("<html>Имя: " + stlrInfo[0]
+							+"<br>Возраст: "+ stlrInfo[1]
+							+"<br>Здоровье: "+ stlrInfo[2]
+							+"<br>Cытость: "+ stlrInfo[3]
+							+"<br>Бодрость: "+ stlrInfo[4]
+							+"<br>Статус: "+ stlrInfo[5]
+							+"</html>");
+		
+		specialButton.setText("Удалить");
+	}
+	
+	private void clearThirdPanel() {
+		thirdPanel.removeAll();
+		thirdPanel.revalidate();
+	}
+	
+	public void settlersChoosen(int settlersNumber){
+		clearThirdPanel();
+		thirdPanel.add(settlerInfo);
+		thirdPanel.repaint();
+		settlerUnchoosen();
+		settlerInfo.setText("<html>Выбрано: " + settlersNumber + "</html>");
+		
+	}
+	
+	public void settlerUnchoosen(){
+		choosenSettler = -13;
+		settlerInfo.setText("");
+		specialButton.setText("Построить");
 	}
 }

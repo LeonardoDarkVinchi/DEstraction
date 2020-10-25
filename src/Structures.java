@@ -9,21 +9,47 @@ import DEstraction.Animation;
 import java.awt.*;
 import java.util.*;
 import java.awt.geom.*;
+import javax.swing.*;
+import java.awt.event.*;
 
 
 public class Structures{ 
 	
 	Structure structs[];
 	Structure structTypes[];
+	Structure allowForBuild[];
 	Map mainMap;
 	
 	public Structures(Map transMap){
 		mainMap = transMap;
 		structs = new Structure[0];
 		structTypes = new Structure[] {
-			new Structure(true, "home", 0, 2, 2, new Color(75, 50, 0)),
-			new Structure(true, "bridge", 1, 1, 1, new Color(100, 75, 0))
+			new Structure(true, "Хижина", 0, 2, 2, new Color(75, 50, 0)),
+			new Structure(true, "Мост", 1, 1, 1, new Color(100, 75, 0))
 		};
+		allowForBuild = new Structure[] {
+			structTypes[0],
+			structTypes[1]
+		};
+	}
+
+	public JPanel madePanelWithBuildButtons() {
+		JPanel buildPanel = new JPanel();
+		buildPanel.setLayout(new java.awt.GridLayout(0, 1, 0, 0));
+		for (Structure struct : allowForBuild) {
+			JButton buildButton = new JButton(struct.name);
+			buildButton.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(ActionEvent paramAnonymousActionEvent) {
+					plantNewStructure(struct.structureType);
+				}
+			});
+			buildPanel.add(buildButton);
+		}
+		return buildPanel;
+	}
+
+	public void plantNewStructure(int structureType) {
+		System.out.println("Выбрано для строительства: " + structTypes[structureType].name); //отладочная информация
 	}
 
 	public void addNewStructure(int x, int y, int structureType){
@@ -76,7 +102,6 @@ public class Structures{
 			isPrimitive = byStructureType.isPrimitive;
 			name = byStructureType.name;
 			structColor = byStructureType.structColor;
-			// cellPic = byStructureType.cellPic;
 			structureType = byStructureType.structureType;
 		}
 		

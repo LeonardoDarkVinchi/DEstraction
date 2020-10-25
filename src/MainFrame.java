@@ -126,7 +126,6 @@ public class MainFrame extends JFrame {
 		optionsButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(ActionEvent paramAnonymousActionEvent) {
 				optionsWindow.setVisible(true);
-				//JOptionPane.showMessageDialog(null,"<html>Тут у нас куча опций.<br>Может быть будут когда-нибудь.</html>", "Это была кнопка остановки игры.", JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
 		
@@ -137,13 +136,18 @@ public class MainFrame extends JFrame {
 				if (helpWindow.countOfOpening == 5) 
 					JOptionPane.showMessageDialog(null,"Пять нажатий. Хорошо, хорошо. Тестируй дальше.", "Моё поздравление!", JOptionPane.INFORMATION_MESSAGE);
 				if (helpWindow.countOfOpening == 10) 
-					JOptionPane.showMessageDialog(null,"Так, я сейчас в непонятках. Ты тестируешь или ты на столько тупой, что не можешь запомнить самые базовые клавиши?", "Моё увлажнение!", JOptionPane.QUESTION_MESSAGE);
-				if (helpWindow.countOfOpening >= 20 && helpWindow.countOfOpening < 30) 
+					JOptionPane.showMessageDialog(null,"Слушай, помимо кнопки помощи в игре есть еще куда понажимать!", "Моё увлажнение!", JOptionPane.QUESTION_MESSAGE);
+				if (helpWindow.countOfOpening >= 20 && helpWindow.countOfOpening < 25) 
 					JOptionPane.showMessageDialog(null,"Слушай, если ты и дальше продолжишь насиловать кнопку помощи, она сломается!", "Моё предупреждение!", JOptionPane.WARNING_MESSAGE);
-				if (helpWindow.countOfOpening == 30) {
-					JOptionPane.showMessageDialog(null,"Все, ты ее сломал. Не забудь доложить кучу!", "Моё осуждение!", JOptionPane.ERROR_MESSAGE );
+				if (helpWindow.countOfOpening == 25) {
+					JOptionPane.showMessageDialog(null,"Все, ты ее сломал! С тебя 100$ на лечение!", "Моё осуждение!", JOptionPane.ERROR_MESSAGE );
 				}
-				if (helpWindow.countOfOpening < 30) helpWindow.setVisible(true);
+				if (helpWindow.countOfOpening < 25) helpWindow.setVisible(true);
+				if (helpWindow.countOfOpening == 30) {
+					thisFrame.setVisible(false);
+					JOptionPane.showMessageDialog(null,"Ты ждал чуда? Зря зря. Теперь ты сломал игру.", "Моё недоумение!", JOptionPane.ERROR_MESSAGE);
+					System.exit(0);
+				}
 			}
 		});
 		

@@ -20,7 +20,6 @@ public class Settlers{
 	public int maxMovingSpeed = 4;
 	public int maxFood = 100;
 	public int maxRest = 100;
-	// private int lastDeletedSettler = -13;
 	
 	public Settlers(GameThread parent){
 		gameThread = parent;
