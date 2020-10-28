@@ -120,7 +120,6 @@ public class GameSupportPanel extends JPanel{
 		thirdPanel.repaint();
 		settlerUnchoosen();
 		settlerInfo.setText("<html>Выбрано: " + settlersNumber + "</html>");
-		
 	}
 	
 	public void settlerUnchoosen(){

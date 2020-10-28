@@ -18,14 +18,17 @@ public class Structures{
 	Structure structs[];
 	Structure structTypes[];
 	Structure allowForBuild[];
-	Map mainMap;
 	
-	public Structures(Map transMap){
+	Map mainMap;
+	GameThread gameThread;
+	
+	public Structures(Map transMap, GameThread transParent){
 		mainMap = transMap;
+		gameThread = transParent;
 		structs = new Structure[0];
 		structTypes = new Structure[] {
-			new Structure(true, "Хижина", 0, 2, 2, new Color(75, 50, 0)),
-			new Structure(true, "Мост", 1, 1, 1, new Color(100, 75, 0))
+			new Structure(true, "Хижина", 0, 2, 2, new Color(75, 50, 0), new int[] {400, 100, 0}),
+			new Structure(true, "Мост", 1, 1, 1, new Color(100, 75, 0), new int[] {100, 0, 0})
 		};
 		allowForBuild = new Structure[] {
 			structTypes[0],
@@ -40,16 +43,38 @@ public class Structures{
 			JButton buildButton = new JButton(struct.name);
 			buildButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(ActionEvent paramAnonymousActionEvent) {
-					plantNewStructure(struct.structureType);
+					// planNewStructure(struct.structureType);
+					gameThread.startToPlanBuiling(struct.structureType);
 				}
 			});
+			buildButton.setToolTipText("<html>" + ((struct.resNeed[0] > 0)?"Дерева " + struct.resNeed[0]:"")
+			+ ((struct.resNeed[1] > 0)?"<br> Камня " + struct.resNeed[1]:"")
+			+ ((struct.resNeed[2] > 0)?"<br> Еды " + struct.resNeed[2]:"")
+			+ "</html>");
 			buildPanel.add(buildButton);
 		}
 		return buildPanel;
 	}
 
-	public void plantNewStructure(int structureType) {
-		System.out.println("Выбрано для строительства: " + structTypes[structureType].name); //отладочная информация
+	// public void planNewStructure(int structureType) {
+		// gameThread.startToPlanBuiling(structureType);
+		// //System.out.println("Выбрано для строительства: " + structTypes[structureType].name); //отладочная информация
+	// }
+	
+	public Rectangle checkPlan(int structureType, Point mousePoint) {
+		int x = mousePoint.x - (mousePoint.x % mainMap.cellWidth);
+		int y = mousePoint.y - (mousePoint.y % mainMap.cellHeight);
+		int width = structTypes[structureType].width - 1;
+		int height = structTypes[structureType].height - 1;
+		
+		return new Rectangle(x, y, width, height);
+	}
+	
+	public boolean checkPlan(Rectangle rect, int structType) {
+		int x1 = (int)(rect.x / mainMap.cellWidth);
+		int y1 = (int)(rect.y / mainMap.cellHeight);
+
+		return Map.isSecondInFirst(mainMap, structTypes[structType].underStructure, x1, y1);
 	}
 
 	public void addNewStructure(int x, int y, int structureType){
@@ -63,8 +88,6 @@ public class Structures{
 			structs[i] = structs[i+1];
 		}
 		structs = Arrays.copyOf(structs, structs.length - 1);
-		//gameSupportPanel.structureCountChanged();
-		//gameThread.settlerDeathAlert(structureNumber);
 	}
 	
 	public void drawStructures(Graphics2D g2d, Point offset){
@@ -78,7 +101,8 @@ public class Structures{
 		int buildReady;
 		Animation work;
 		Animation stay;
-		int resources[];	
+		int resources[];
+		int resNeed[];
 		int x;
 		int y;
 		int width;
@@ -88,21 +112,29 @@ public class Structures{
 		String name;
 		boolean isSelected = false;
 		Color structColor;
+		Map underStructure;
 		
-		Structure(boolean isPrim, String structName, int structType, int widthInCells, int heightInCells, Color clr) {
+		Structure(boolean isPrim, String structName, int structType, int widthInCells, int heightInCells, Color clr, int[] res) {
 			isPrimitive = isPrim;
 			name = structName;
 			structureType = structType;
 			structColor = clr;
 			width = widthInCells * mainMap.cellWidth;
 			height = heightInCells * mainMap.cellHeight;
+			underStructure = Map.makeBuildMap(structureType);
+			resNeed = res;
 		}
-		
+				
 		Structure(Structure byStructureType, Point pos) {
 			isPrimitive = byStructureType.isPrimitive;
 			name = byStructureType.name;
 			structColor = byStructureType.structColor;
 			structureType = byStructureType.structureType;
+			x = pos.x;
+			y = pos.y;
+			width = byStructureType.width;
+			height = byStructureType.height;
+			buildReady = 0;
 		}
 		
 		public void drawStructure(Graphics2D g2d, Point offset){

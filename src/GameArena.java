@@ -23,6 +23,9 @@ public class GameArena extends JPanel{
 	public int offsetX = 0;
 	public int offsetY = 0;
 	
+	public Rectangle buildPlan;
+	boolean isFeet;
+	
 	public int x1;
 	public int x2;
 	public int y1;
@@ -83,6 +86,33 @@ public class GameArena extends JPanel{
 		structures.drawStructures(g2d, offsetPoint);
 		g2d.setColor(Colors.black);
 		if (isRect) g2d.drawRect(Math.min(x1,x2), Math.min(y1,y2), Math.abs(x1-x2), Math.abs(y1-y2));
+		if (buildPlan != null) {
+			if(isFeet) g2d.setColor(Colors.black);
+			else g2d.setColor(Colors.red);
+			drawCorners(g2d, buildPlan, (int)(Math.min(mainMap.cellWidth, mainMap.cellHeight) / 4));
+		}
 	}
 	
+	public void drawCorners(Graphics2D g2d, Rectangle rect, int cornerLength) {
+		int x = rect.x + offsetX;
+		int y = rect.y + offsetY;
+		int width = rect.width;
+		int height = rect.height;
+		
+		//left up corner
+		g2d.drawLine(x, y, x + cornerLength, y);
+		g2d.drawLine(x, y, x, y + cornerLength);
+
+		//right up corner
+		g2d.drawLine(x + width, y, (x + width) - cornerLength, y);
+		g2d.drawLine(x + width, y, x + width, y + cornerLength);
+
+		//left down corner
+		g2d.drawLine(x, y + height, x + cornerLength, y + height);
+		g2d.drawLine(x, y + height, x, (y + height) - cornerLength);
+
+		//right down corner
+		g2d.drawLine(x + width, y + height, (x + width) - cornerLength, y + height);
+		g2d.drawLine(x + width, y + height, x + width, (y + height) - cornerLength);
+	}
 }

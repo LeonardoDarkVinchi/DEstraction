@@ -18,7 +18,7 @@ public class Map{
 	
 	private GameThread gameThread;
 	private Cell mapCells [][];
-	private Cell cellTypes [];
+	private static Cell cellTypes [];
 	public int cellWidth = 16;
 	public int cellHeight = 16;
 	public float fishSpawnChance = (float)0.01;  //percents (%)
@@ -31,8 +31,45 @@ public class Map{
 		generateRandomeMap(60, 60);
 	}
 	
+	private Map(int width, int height) {
+		mapCells = new Cell[width][height];
+	}
+	
+	public static Map makeBuildMap(int structType) {
+		Map buildMap = null; 
+		switch (structType) {
+			case 0: //home
+				buildMap = new Map(2,2);
+				buildMap.mapCells[0][0] = Map.cellTypes[0];
+				buildMap.mapCells[0][1] = Map.cellTypes[0];
+				buildMap.mapCells[1][0] = Map.cellTypes[0];
+				buildMap.mapCells[1][1] = Map.cellTypes[0];
+				break;
+			case 1: //bridge
+				buildMap = new Map(1,1);
+				buildMap.mapCells[0][0] = Map.cellTypes[3];				
+				break;
+			default:
+				buildMap = new Map(1,1);
+				buildMap.mapCells[0][0] = Map.cellTypes[0];
+				break; 
+		}
+		return buildMap;
+	}
+	
+	public static boolean isSecondInFirst(Map firstMap, Map secondMap, int xOffset, int yOffset) {
+		if (xOffset + secondMap.mapCells.length - 1 >= firstMap.mapCells.length 
+		|| yOffset + secondMap.mapCells[0].length - 1 >= firstMap.mapCells[0].length  )
+			return false;
+		for (int i = 0; i < secondMap.mapCells.length; i++) 
+			for (int j = 0; j < secondMap.mapCells[0].length; j++)
+				if (firstMap.mapCells[i + xOffset][j + yOffset].cellType != secondMap.mapCells[i][j].cellType) 
+					return false;
+		return true;
+	}
+	
 	public void initCells() {
-		cellTypes = new Cell[] {
+		Map.cellTypes = new Cell[] {
 			new Cell(true, "grass", 0, new Color(150, 255, 150),  null),
 			new Cell(true, "tree", 1, new Color(110, 90, 0),  null),
 			new Cell(true, "stone", 2, new Color(150, 150, 150),  null),
@@ -124,7 +161,7 @@ public class Map{
 		mapCells = new Cell[widthSize][lenghtSize];
 		for (int i = 0; i < widthSize; i++)
 			for (int j = 0; j < lenghtSize; j++){
-				mapCells[i][j] = new Cell(cellTypes[(int)(Math.random() * cellTypes.length)]);
+				mapCells[i][j] = new Cell(Map.cellTypes[(int)(Math.random() * Map.cellTypes.length)]);
 				if ((mapCells[i][j].cellType != 0) && (mapCells[i][j].cellType != 3)) mapCells[i][j].resourceCount = (int)(Math.random() * maxResCount + 1);
 			}
 	}
@@ -165,6 +202,10 @@ public class Map{
 			String.valueOf(cell.resourceCount)
 		};
 		return answer;
+	}
+	
+	public int getCellType(int x, int y) {
+		return getCellFromCoord(x, y).cellType;
 	}
 	
 	private class Cell {

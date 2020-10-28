@@ -67,7 +67,7 @@ public class MainFrame extends JFrame {
 		
 		setVisible(true);
 	}
- 
+	
 	private void setConsttraints() {	
 		constraintsForMenuPanel = new GridBagConstraints();
 		constraintsForMenuPanel.gridx = 0;

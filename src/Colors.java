@@ -14,6 +14,7 @@ import javax.swing.*;
 public class Colors {
 
     public static Color black = new Color(0, 0, 0);
+    public static Color red = new Color(255, 0, 0);
 	
 	
 }
